@@ -1,11 +1,31 @@
 {
   "compilerOptions": {
-    "target": "ES2020", "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"], "module": "ESNext",
-    "skipLibCheck": true, "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true, "resolveJsonModule": true,
-    "isolatedModules": true, "noEmit": true, "jsx": "react-jsx",
-    "strict": true, "noUnusedLocals": false, "noUnusedParameters": false
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Mode Bundler (Vite) */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Validation stricte */
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
+    /* LE FIX : Indique à TS d'utiliser les types de Vite */
+    "types": ["vite/client"]
   },
-  "include": ["src"]
+  "include": [
+    "src", 
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/vite-env.d.ts"
+  ]
 }
