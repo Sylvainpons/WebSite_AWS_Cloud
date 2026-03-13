@@ -2,7 +2,7 @@ name: Deploy One Piece Encyclopedia
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   deploy-api:
