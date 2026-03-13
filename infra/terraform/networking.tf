@@ -109,6 +109,13 @@ resource "aws_security_group" "api" {
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
+  ingress {
+  description = "SSH"
+  from_port   = 22
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = ["192.168.1.254/32"]
+}
 
   egress {
     from_port   = 0
