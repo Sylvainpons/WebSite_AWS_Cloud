@@ -24,7 +24,7 @@
     "uuid": "^13.0.0",
     "ts-node": "^10.9.2", 
     "typescript": "^5.5.3",
-    "@types/node": "^20.14.10",
+    "@types/node": "^20.14.10"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
