@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   db:
     image: postgres:16-alpine
@@ -17,6 +15,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - onepiece_network
 
   api:
     build:
@@ -26,18 +26,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - ./backend/.env
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/onepiece_encyclopedia
-      JWT_SECRET: dev-secret-change-in-prod
-      PORT: 3001
       NODE_ENV: development
+      PORT: 3001
     ports:
       - "3001:3001"
     volumes:
       - ./backend/src:/app/src
       - ./backend/prisma:/app/prisma
-    env_file:
-      - ./backend/.env
+      - ./backend/uploads:/app/uploads
+    networks:
+      - onepiece_network
 
   frontend:
     build:
@@ -46,12 +48,30 @@ services:
     container_name: onepiece_frontend
     depends_on:
       - api
-    environment:
-      VITE_API_URL: http://localhost:3001/api
     ports:
       - "5173:5173"
     volumes:
       - ./frontend/src:/app/src
+    networks:
+      - onepiece_network
+
+  admin:
+    build:
+      context: ./frontend-admin
+      dockerfile: Dockerfile.dev
+    container_name: onepiece_admin
+    depends_on:
+      - api
+    ports:
+      - "5174:5174"
+    volumes:
+      - ./frontend-admin/src:/app/src
+    networks:
+      - onepiece_network
 
 volumes:
   postgres_data:
+
+networks:
+  onepiece_network:
+    driver: bridge

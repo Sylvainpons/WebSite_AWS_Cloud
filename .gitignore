@@ -1,6 +1,7 @@
 # ─── Dependencies ────────────────────────────────────────────────────────────
 node_modules/
-
+dist/
+build/
 # ─── Environment variables (NEVER commit these) ───────────────────────────────
 .env
 .env.local
@@ -13,7 +14,8 @@ dist/
 build/
 
 # ─── Local uploads (dev storage) ─────────────────────────────────────────────
-backend/uploads/
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # ─── Logs ────────────────────────────────────────────────────────────────────
 *.log
@@ -26,9 +28,25 @@ yarn-error.log*
 Thumbs.db
 desktop.ini
 
+# ─── Terraform ──────────────────────────────────────────
+infra/terraform/terraform.tfvars
+infra/terraform/.terraform/
+infra/terraform/.terraform.lock.hcl
+infra/terraform/terraform.tfstate
+infra/terraform/terraform.tfstate.backup
+infra/terraform/*.tfplan
+
 # ─── IDE ─────────────────────────────────────────────────────────────────────
 .vscode/
 .idea/
 
 # ─── TypeScript ──────────────────────────────────────────────────────────────
 *.tsbuildinfo
+# ─── SSH Keys ─────────────────────────────────────────────────────────────────
+*.pem
+*.key
+ 
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+ 

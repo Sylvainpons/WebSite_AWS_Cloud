@@ -1,0 +1,115 @@
+name: Deploy One Piece Encyclopedia
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-api:
+    name: Deploy API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & push Docker image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAG: ${{ github.sha }}
+        run: |
+          cd backend
+          docker build -t $REGISTRY/onepiece-api:$TAG -t $REGISTRY/onepiece-api:latest .
+          docker push $REGISTRY/onepiece-api:$TAG
+          docker push $REGISTRY/onepiece-api:latest
+
+      - name: Deploy on EC2 via SSM
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          INSTANCE_IDS=$(aws autoscaling describe-auto-scaling-groups \
+            --auto-scaling-group-names onepiece-encyclopedia-asg \
+            --query 'AutoScalingGroups[0].Instances[?LifecycleState==`InService`].InstanceId' \
+            --output text)
+          for ID in $INSTANCE_IDS; do
+            aws ssm send-command \
+              --instance-id $ID \
+              --document-name "AWS-RunShellScript" \
+              --parameters commands="[
+                'aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $REGISTRY',
+                'docker pull $REGISTRY/onepiece-api:latest',
+                'docker stop onepiece_api || true && docker rm onepiece_api || true',
+                'docker run -d --name onepiece_api --restart always -p 3001:3001 --env-file /app/.env $REGISTRY/onepiece-api:latest',
+                'sleep 5 && docker exec onepiece_api npx prisma migrate deploy'
+              ]"
+          done
+
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build
+        run: |
+          cd frontend && npm ci
+          VITE_API_URL=${{ secrets.API_URL }} npm run build
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ secrets.AWS_REGION }}
+      - name: Sync S3 + invalidate CloudFront
+        run: |
+          aws s3 sync frontend/dist/ s3://${{ secrets.FRONTEND_BUCKET }} \
+            --delete --exclude "index.html" \
+            --cache-control "public, max-age=31536000, immutable"
+          aws s3 cp frontend/dist/index.html s3://${{ secrets.FRONTEND_BUCKET }}/index.html \
+            --cache-control "no-cache, no-store, must-revalidate"
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.FRONTEND_CF_DISTRIBUTION_ID }} --paths "/*"
+
+  # Admin → S3 privé → CloudFront OAC (URL secrète + JWT auth)
+  deploy-admin:
+    name: Deploy Admin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend-admin/package-lock.json
+      - name: Build
+        run: |
+          cd frontend-admin && npm ci
+          VITE_API_URL=${{ secrets.API_URL }} npm run build
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ secrets.AWS_REGION }}
+      - name: Sync private S3 + invalidate CloudFront
+        run: |
+          aws s3 sync frontend-admin/dist/ s3://${{ secrets.ADMIN_BUCKET }} \
+            --delete --exclude "index.html" \
+            --cache-control "public, max-age=31536000, immutable"
+          aws s3 cp frontend-admin/dist/index.html s3://${{ secrets.ADMIN_BUCKET }}/index.html \
+            --cache-control "no-cache, no-store, must-revalidate"
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.ADMIN_CF_DISTRIBUTION_ID }} --paths "/*"
