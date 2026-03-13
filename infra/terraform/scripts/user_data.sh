@@ -2,10 +2,9 @@
 set -e
 exec > /var/log/onepiece-init.log 2>&1
 
-echo "=== One Piece Encyclopedia — EC2 Bootstrap ==="
+echo "=== One Piece Encyclopedia - Bootstrap ==="
 date
 
-# ─── System ───────────────────────────────────────────────────────────────────
 yum update -y
 yum install -y docker git nginx
 
@@ -13,32 +12,22 @@ systemctl start docker
 systemctl enable docker
 usermod -aG docker ec2-user
 
-# Docker Compose
-curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
-  -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
-# ─── Env file API ─────────────────────────────────────────────────────────────
 mkdir -p /app
-cat > /app/.env << ENVEOF
-DATABASE_URL=${db_url}
-JWT_SECRET=${jwt_secret}
-NODE_ENV=production
-PORT=3001
-STORAGE_DRIVER=s3
-AWS_REGION=${s3_region}
-S3_BUCKET_NAME=${s3_bucket}
-S3_BASE_URL=${s3_base_url}
-ENVEOF
+
+printf "DATABASE_URL=%s\nJWT_SECRET=%s\nNODE_ENV=production\nPORT=3001\nSTORAGE_DRIVER=s3\nAWS_REGION=%s\nS3_BUCKET_NAME=%s\nS3_BASE_URL=%s\n" \
+  "${db_url}" \
+  "${jwt_secret}" \
+  "${s3_region}" \
+  "${s3_bucket}" \
+  "${s3_base_url}" \
+  > /app/.env
 
 chmod 600 /app/.env
 
-# ─── Nginx — proxy vers l'API Docker ─────────────────────────────────────────
 cat > /etc/nginx/conf.d/onepiece.conf << 'NGINXEOF'
 server {
     listen 80;
     server_name _;
-
     client_max_body_size 10M;
 
     location /api/ {
@@ -59,5 +48,5 @@ NGINXEOF
 
 nginx -t && systemctl start nginx && systemctl enable nginx
 
-echo "=== Bootstrap terminé — en attente du déploiement GitHub Actions ==="
+echo "=== Bootstrap termine ==="
 date

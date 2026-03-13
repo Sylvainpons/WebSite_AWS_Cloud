@@ -95,27 +95,34 @@ resource "aws_security_group" "alb" {
 }
 
 # ─── Security Group : EC2 API ─────────────────────────────────────────────────
-# Accepte uniquement le trafic venant de l'ALB
-# SSH via SSM (pas besoin d'ouvrir le port 22)
 resource "aws_security_group" "api" {
   name        = "${var.project}-api-sg"
-  description = "EC2 API - traffic from ALB only"
+  description = "EC2 API"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "API from ALB only"
-    from_port       = 3001
-    to_port         = 3001
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb.id]
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
+
   ingress {
-  description = "SSH"
-  from_port   = 22
-  to_port     = 22
-  protocol    = "tcp"
-  cidr_blocks = ["192.168.1.254/32"]
-}
+    description = "API"
+    from_port   = 3001
+    to_port     = 3001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   egress {
     from_port   = 0
