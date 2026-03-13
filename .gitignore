@@ -35,7 +35,11 @@ infra/terraform/.terraform.lock.hcl
 infra/terraform/terraform.tfstate
 infra/terraform/terraform.tfstate.backup
 infra/terraform/*.tfplan
-
+*.backup
+*.pem
+*key.pem
+onepiece-key.pem
+infra/terraform/onepiece-key.pem
 # ─── IDE ─────────────────────────────────────────────────────────────────────
 .vscode/
 .idea/

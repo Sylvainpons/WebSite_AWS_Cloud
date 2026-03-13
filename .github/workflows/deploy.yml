@@ -32,26 +32,26 @@ jobs:
           docker push $REGISTRY/onepiece-api:$TAG
           docker push $REGISTRY/onepiece-api:latest
 
-      - name: Deploy on EC2 via SSM
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          INSTANCE_IDS=$(aws autoscaling describe-auto-scaling-groups \
-            --auto-scaling-group-names onepiece-encyclopedia-asg \
-            --query 'AutoScalingGroups[0].Instances[?LifecycleState==`InService`].InstanceId' \
-            --output text)
-          for ID in $INSTANCE_IDS; do
-            aws ssm send-command \
-              --instance-id $ID \
-              --document-name "AWS-RunShellScript" \
-              --parameters commands="[
-                'aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $REGISTRY',
-                'docker pull $REGISTRY/onepiece-api:latest',
-                'docker stop onepiece_api || true && docker rm onepiece_api || true',
-                'docker run -d --name onepiece_api --restart always -p 3001:3001 --env-file /app/.env $REGISTRY/onepiece-api:latest',
-                'sleep 5 && docker exec onepiece_api npx prisma migrate deploy'
-              ]"
-          done
+      - name: Deploy on EC2 via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host:     ${{ secrets.EC2_IP }}
+          username: ec2-user
+          key:      ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+              docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+            docker pull ${{ secrets.ECR_REGISTRY }}/onepiece-api:latest
+            docker stop onepiece_api || true
+            docker rm   onepiece_api || true
+            docker run -d \
+              --name onepiece_api \
+              --restart always \
+              -p 3001:3001 \
+              --env-file /app/.env \
+              ${{ secrets.ECR_REGISTRY }}/onepiece-api:latest
+            sleep 5
+            docker exec onepiece_api npx prisma migrate deploy
 
   deploy-frontend:
     name: Deploy Frontend
@@ -83,7 +83,6 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.FRONTEND_CF_DISTRIBUTION_ID }} --paths "/*"
 
-  # Admin → S3 privé → CloudFront OAC (URL secrète + JWT auth)
   deploy-admin:
     name: Deploy Admin
     runs-on: ubuntu-latest

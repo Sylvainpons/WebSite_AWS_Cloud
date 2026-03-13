@@ -18,10 +18,10 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   origin {
-    domain_name = aws_lb.api.dns_name
-    origin_id   = "ALB-api"
+    domain_name = aws_instance.api.public_dns
+    origin_id   = "EC2-api"
     custom_origin_config {
-      http_port              = 80
+      http_port              = 3001
       https_port             = 443
       origin_protocol_policy = "http-only"
       origin_ssl_protocols   = ["TLSv1.2"]
@@ -32,7 +32,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     path_pattern           = "/api/*"
     allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "ALB-api"
+    target_origin_id       = "EC2-api"
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
     forwarded_values {
@@ -72,7 +72,9 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   restrictions {
-    geo_restriction { restriction_type = "none" }
+    geo_restriction {
+      restriction_type = "none"
+    }
   }
   viewer_certificate { cloudfront_default_certificate = true }
   tags = { Name = "${var.project}-frontend-cf" }
@@ -100,10 +102,10 @@ resource "aws_cloudfront_distribution" "admin" {
   }
 
   origin {
-    domain_name = aws_lb.api.dns_name
-    origin_id   = "ALB-api"
+    domain_name = aws_instance.api.public_dns
+    origin_id   = "EC2-api"
     custom_origin_config {
-      http_port              = 80
+      http_port              = 3001
       https_port             = 443
       origin_protocol_policy = "http-only"
       origin_ssl_protocols   = ["TLSv1.2"]
@@ -114,7 +116,7 @@ resource "aws_cloudfront_distribution" "admin" {
     path_pattern           = "/api/*"
     allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "ALB-api"
+    target_origin_id       = "EC2-api"
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
     forwarded_values {
@@ -154,7 +156,9 @@ resource "aws_cloudfront_distribution" "admin" {
   }
 
   restrictions {
-    geo_restriction { restriction_type = "none" }
+    geo_restriction {
+      restriction_type = "none"
+    }
   }
   viewer_certificate { cloudfront_default_certificate = true }
   tags = { Name = "${var.project}-admin-cf" }

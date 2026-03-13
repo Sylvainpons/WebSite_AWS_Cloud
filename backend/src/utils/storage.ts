@@ -33,11 +33,8 @@ const deleteLocally = (key: string): void => {
 // ─── S3 Storage ──────────────────────────────────────────────────────────────
 
 const getS3Client = () => new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
+  region: process.env.AWS_REGION || 'eu-west-3',
+  // Pas de credentials hardcodés — le SDK utilise automatiquement l'IAM role EC2
 })
 
 const saveToS3 = async (
