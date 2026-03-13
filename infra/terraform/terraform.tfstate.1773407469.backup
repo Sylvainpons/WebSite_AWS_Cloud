@@ -1,0 +1,2167 @@
+{
+  "version": 4,
+  "terraform_version": "1.14.6",
+  "serial": 40,
+  "lineage": "b58ae5c3-f119-0eab-d01e-2edc50994b94",
+  "outputs": {
+    "admin_bucket": {
+      "value": "onepiece-encyclopedia-admin-prod",
+      "type": "string"
+    },
+    "admin_cf_distribution_id": {
+      "value": "E2GF6M6H5SCRRQ",
+      "type": "string"
+    },
+    "admin_url": {
+      "value": "https://dagaz76hpexkw.cloudfront.net",
+      "type": "string",
+      "sensitive": true
+    },
+    "alb_dns_name": {
+      "value": "http://onepiece-encyclopedia-alb-1140334789.eu-west-3.elb.amazonaws.com",
+      "type": "string"
+    },
+    "deploy_summary": {
+      "value": "\n╔═══════════════════════════════════════════════════════════════╗\n║        ONE PIECE ENCYCLOPEDIA — INFRASTRUCTURE READY          ║\n╠═══════════════════════════════════════════════════════════════╣\n║  Frontend   : https://d1ac0o50npjwy7.cloudfront.net\n║  Admin      : https://dagaz76hpexkw.cloudfront.net\n║               ↑ URL secrète — partage uniquement avec ton client\n║  API (ALB)  : http://onepiece-encyclopedia-alb-1140334789.eu-west-3.elb.amazonaws.com\n╠═══════════════════════════════════════════════════════════════╣\n║  Read Replica : désactivée  →  enable_read_replica=true pour activer\n║  Multi-AZ     : désactivé   →  db_multi_az=true pour activer\n║  Auto Scaling : 1-3 instances  (scale up \u003e70% CPU / scale down \u003c20%)\n╚═══════════════════════════════════════════════════════════════╝\n\nGitHub Secrets à configurer :\n  API_URL                    = http://onepiece-encyclopedia-alb-1140334789.eu-west-3.elb.amazonaws.com/api\n  FRONTEND_BUCKET            = onepiece-encyclopedia-frontend-prod\n  ADMIN_BUCKET               = onepiece-encyclopedia-admin-prod\n  FRONTEND_CF_DISTRIBUTION_ID = E2POUO6O58D9TN\n  ADMIN_CF_DISTRIBUTION_ID   = E2GF6M6H5SCRRQ\n",
+      "type": "string"
+    },
+    "frontend_bucket": {
+      "value": "onepiece-encyclopedia-frontend-prod",
+      "type": "string"
+    },
+    "frontend_cf_distribution_id": {
+      "value": "E2POUO6O58D9TN",
+      "type": "string"
+    },
+    "frontend_url": {
+      "value": "https://d1ac0o50npjwy7.cloudfront.net",
+      "type": "string"
+    },
+    "images_bucket": {
+      "value": "onepiece-encyclopedia-images-prod",
+      "type": "string"
+    },
+    "rds_replica_endpoint": {
+      "value": "not enabled",
+      "type": "string",
+      "sensitive": true
+    }
+  },
+  "resources": [
+    {
+      "mode": "data",
+      "type": "aws_ami",
+      "name": "amazon_linux",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "architecture": "x86_64",
+            "arn": "arn:aws:ec2:eu-west-3::image/ami-0cfc307990ac92cc0",
+            "block_device_mappings": [
+              {
+                "device_name": "/dev/xvda",
+                "ebs": {
+                  "delete_on_termination": "true",
+                  "encrypted": "false",
+                  "iops": "3000",
+                  "snapshot_id": "snap-0a3ce58cfa7cf64ba",
+                  "throughput": "125",
+                  "volume_initialization_rate": "0",
+                  "volume_size": "30",
+                  "volume_type": "gp3"
+                },
+                "no_device": "",
+                "virtual_name": ""
+              }
+            ],
+            "boot_mode": "uefi-preferred",
+            "creation_date": "2026-03-07T03:24:17.000Z",
+            "deprecation_time": "2028-03-07T03:24:17.000Z",
+            "description": "Amazon Linux AMI 2023.0.20260307 x86_64 ECS HVM EBS",
+            "ena_support": true,
+            "executable_users": null,
+            "filter": [
+              {
+                "name": "name",
+                "values": [
+                  "al2023-ami-*-x86_64"
+                ]
+              }
+            ],
+            "hypervisor": "xen",
+            "id": "ami-0cfc307990ac92cc0",
+            "image_id": "ami-0cfc307990ac92cc0",
+            "image_location": "amazon/al2023-ami-ecs-hvm-2023.0.20260307-kernel-6.1-x86_64",
+            "image_owner_alias": "amazon",
+            "image_type": "machine",
+            "imds_support": "v2.0",
+            "include_deprecated": false,
+            "kernel_id": "",
+            "last_launched_time": "",
+            "most_recent": true,
+            "name": "al2023-ami-ecs-hvm-2023.0.20260307-kernel-6.1-x86_64",
+            "name_regex": null,
+            "owner_id": "591542846629",
+            "owners": [
+              "amazon"
+            ],
+            "platform": "",
+            "platform_details": "Linux/UNIX",
+            "product_codes": [],
+            "public": true,
+            "ramdisk_id": "",
+            "root_device_name": "/dev/xvda",
+            "root_device_type": "ebs",
+            "root_snapshot_id": "snap-0a3ce58cfa7cf64ba",
+            "sriov_net_support": "simple",
+            "state": "available",
+            "state_reason": {
+              "code": "UNSET",
+              "message": "UNSET"
+            },
+            "tags": {},
+            "timeouts": null,
+            "tpm_support": "",
+            "uefi_data": null,
+            "usage_operation": "RunInstances",
+            "virtualization_type": "hvm"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_cloudfront_distribution",
+      "name": "admin",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "aliases": [],
+            "arn": "arn:aws:cloudfront::332144430830:distribution/E2GF6M6H5SCRRQ",
+            "caller_reference": "terraform-20260313130233275800000002",
+            "comment": "onepiece-encyclopedia - Admin (private OAC)",
+            "continuous_deployment_policy_id": "",
+            "custom_error_response": [
+              {
+                "error_caching_min_ttl": 0,
+                "error_code": 403,
+                "response_code": 200,
+                "response_page_path": "/index.html"
+              },
+              {
+                "error_caching_min_ttl": 0,
+                "error_code": 404,
+                "response_code": 200,
+                "response_page_path": "/index.html"
+              }
+            ],
+            "default_cache_behavior": [
+              {
+                "allowed_methods": [
+                  "GET",
+                  "HEAD"
+                ],
+                "cache_policy_id": "",
+                "cached_methods": [
+                  "GET",
+                  "HEAD"
+                ],
+                "compress": true,
+                "default_ttl": 300,
+                "field_level_encryption_id": "",
+                "forwarded_values": [
+                  {
+                    "cookies": [
+                      {
+                        "forward": "none",
+                        "whitelisted_names": []
+                      }
+                    ],
+                    "headers": [],
+                    "query_string": false,
+                    "query_string_cache_keys": []
+                  }
+                ],
+                "function_association": [],
+                "grpc_config": [
+                  {
+                    "enabled": false
+                  }
+                ],
+                "lambda_function_association": [],
+                "max_ttl": 3600,
+                "min_ttl": 0,
+                "origin_request_policy_id": "",
+                "realtime_log_config_arn": "",
+                "response_headers_policy_id": "",
+                "smooth_streaming": false,
+                "target_origin_id": "S3-admin",
+                "trusted_key_groups": [],
+                "trusted_signers": [],
+                "viewer_protocol_policy": "redirect-to-https"
+              }
+            ],
+            "default_root_object": "index.html",
+            "domain_name": "dagaz76hpexkw.cloudfront.net",
+            "enabled": true,
+            "etag": "E23ZP02F085DFQ",
+            "hosted_zone_id": "Z2FDTNDATAQYW2",
+            "http_version": "http2",
+            "id": "E2GF6M6H5SCRRQ",
+            "in_progress_validation_batches": 0,
+            "is_ipv6_enabled": true,
+            "last_modified_time": "2026-03-13 13:02:33.919 +0000 UTC",
+            "logging_config": [],
+            "ordered_cache_behavior": [],
+            "origin": [
+              {
+                "connection_attempts": 3,
+                "connection_timeout": 10,
+                "custom_header": [],
+                "custom_origin_config": [],
+                "domain_name": "onepiece-encyclopedia-admin-prod.s3.eu-west-3.amazonaws.com",
+                "origin_access_control_id": "E2LJN12A2MVV9A",
+                "origin_id": "S3-admin",
+                "origin_path": "",
+                "origin_shield": [],
+                "s3_origin_config": [],
+                "vpc_origin_config": []
+              }
+            ],
+            "origin_group": [],
+            "price_class": "PriceClass_100",
+            "restrictions": [
+              {
+                "geo_restriction": [
+                  {
+                    "locations": [],
+                    "restriction_type": "none"
+                  }
+                ]
+              }
+            ],
+            "retain_on_delete": false,
+            "staging": false,
+            "status": "Deployed",
+            "tags": {
+              "Name": "onepiece-encyclopedia-admin-cf"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-admin-cf",
+              "Project": "onepiece-encyclopedia"
+            },
+            "trusted_key_groups": [
+              {
+                "enabled": false,
+                "items": []
+              }
+            ],
+            "trusted_signers": [
+              {
+                "enabled": false,
+                "items": []
+              }
+            ],
+            "viewer_certificate": [
+              {
+                "acm_certificate_arn": "",
+                "cloudfront_default_certificate": true,
+                "iam_certificate_id": "",
+                "minimum_protocol_version": "TLSv1",
+                "ssl_support_method": ""
+              }
+            ],
+            "wait_for_deployment": true,
+            "web_acl_id": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ==",
+          "dependencies": [
+            "aws_cloudfront_origin_access_control.admin",
+            "aws_s3_bucket.admin"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_cloudfront_distribution",
+      "name": "frontend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "aliases": [],
+            "arn": "arn:aws:cloudfront::332144430830:distribution/E2POUO6O58D9TN",
+            "caller_reference": "terraform-20260313130233672600000003",
+            "comment": "onepiece-encyclopedia - Frontend public",
+            "continuous_deployment_policy_id": "",
+            "custom_error_response": [
+              {
+                "error_caching_min_ttl": 0,
+                "error_code": 403,
+                "response_code": 200,
+                "response_page_path": "/index.html"
+              },
+              {
+                "error_caching_min_ttl": 0,
+                "error_code": 404,
+                "response_code": 200,
+                "response_page_path": "/index.html"
+              }
+            ],
+            "default_cache_behavior": [
+              {
+                "allowed_methods": [
+                  "GET",
+                  "HEAD"
+                ],
+                "cache_policy_id": "",
+                "cached_methods": [
+                  "GET",
+                  "HEAD"
+                ],
+                "compress": true,
+                "default_ttl": 3600,
+                "field_level_encryption_id": "",
+                "forwarded_values": [
+                  {
+                    "cookies": [
+                      {
+                        "forward": "none",
+                        "whitelisted_names": []
+                      }
+                    ],
+                    "headers": [],
+                    "query_string": false,
+                    "query_string_cache_keys": []
+                  }
+                ],
+                "function_association": [],
+                "grpc_config": [
+                  {
+                    "enabled": false
+                  }
+                ],
+                "lambda_function_association": [],
+                "max_ttl": 86400,
+                "min_ttl": 0,
+                "origin_request_policy_id": "",
+                "realtime_log_config_arn": "",
+                "response_headers_policy_id": "",
+                "smooth_streaming": false,
+                "target_origin_id": "S3-frontend",
+                "trusted_key_groups": [],
+                "trusted_signers": [],
+                "viewer_protocol_policy": "redirect-to-https"
+              }
+            ],
+            "default_root_object": "index.html",
+            "domain_name": "d1ac0o50npjwy7.cloudfront.net",
+            "enabled": true,
+            "etag": "E23ZP02F085DFQ",
+            "hosted_zone_id": "Z2FDTNDATAQYW2",
+            "http_version": "http2",
+            "id": "E2POUO6O58D9TN",
+            "in_progress_validation_batches": 0,
+            "is_ipv6_enabled": true,
+            "last_modified_time": "2026-03-13 13:02:34.612 +0000 UTC",
+            "logging_config": [],
+            "ordered_cache_behavior": [],
+            "origin": [
+              {
+                "connection_attempts": 3,
+                "connection_timeout": 10,
+                "custom_header": [],
+                "custom_origin_config": [
+                  {
+                    "http_port": 80,
+                    "https_port": 443,
+                    "origin_keepalive_timeout": 5,
+                    "origin_protocol_policy": "http-only",
+                    "origin_read_timeout": 30,
+                    "origin_ssl_protocols": [
+                      "TLSv1.2"
+                    ]
+                  }
+                ],
+                "domain_name": "onepiece-encyclopedia-frontend-prod.s3-website.eu-west-3.amazonaws.com",
+                "origin_access_control_id": "",
+                "origin_id": "S3-frontend",
+                "origin_path": "",
+                "origin_shield": [],
+                "s3_origin_config": [],
+                "vpc_origin_config": []
+              }
+            ],
+            "origin_group": [],
+            "price_class": "PriceClass_100",
+            "restrictions": [
+              {
+                "geo_restriction": [
+                  {
+                    "locations": [],
+                    "restriction_type": "none"
+                  }
+                ]
+              }
+            ],
+            "retain_on_delete": false,
+            "staging": false,
+            "status": "Deployed",
+            "tags": {
+              "Name": "onepiece-encyclopedia-frontend-cf"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-frontend-cf",
+              "Project": "onepiece-encyclopedia"
+            },
+            "trusted_key_groups": [
+              {
+                "enabled": false,
+                "items": []
+              }
+            ],
+            "trusted_signers": [
+              {
+                "enabled": false,
+                "items": []
+              }
+            ],
+            "viewer_certificate": [
+              {
+                "acm_certificate_arn": "",
+                "cloudfront_default_certificate": true,
+                "iam_certificate_id": "",
+                "minimum_protocol_version": "TLSv1",
+                "ssl_support_method": ""
+              }
+            ],
+            "wait_for_deployment": true,
+            "web_acl_id": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ==",
+          "dependencies": [
+            "aws_s3_bucket.frontend",
+            "aws_s3_bucket_website_configuration.frontend"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_cloudfront_origin_access_control",
+      "name": "admin",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:cloudfront::332144430830:origin-access-control/E2LJN12A2MVV9A",
+            "description": "Managed by Terraform",
+            "etag": "ETVPDKIKX0DER",
+            "id": "E2LJN12A2MVV9A",
+            "name": "onepiece-encyclopedia-admin-oac",
+            "origin_access_control_origin_type": "s3",
+            "signing_behavior": "always",
+            "signing_protocol": "sigv4"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_db_parameter_group",
+      "name": "postgres",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "status": "tainted",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:rds:eu-west-3:332144430830:pg:onepiece-encyclopedia-pg16",
+            "description": "Managed by Terraform",
+            "family": "postgres16",
+            "id": "onepiece-encyclopedia-pg16",
+            "name": "onepiece-encyclopedia-pg16",
+            "name_prefix": "",
+            "parameter": [
+              {
+                "apply_method": "pending-reboot",
+                "name": "max_connections",
+                "value": "LEAST({DBInstanceClassMemory/9531392},5000)"
+              }
+            ],
+            "skip_destroy": false,
+            "tags": {
+              "Name": "onepiece-encyclopedia-pg16"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-pg16",
+              "Project": "onepiece-encyclopedia"
+            }
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_db_subnet_group",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:rds:eu-west-3:332144430830:subgrp:onepiece-encyclopedia-db-subnet-group",
+            "description": "Managed by Terraform",
+            "id": "onepiece-encyclopedia-db-subnet-group",
+            "name": "onepiece-encyclopedia-db-subnet-group",
+            "name_prefix": "",
+            "subnet_ids": [
+              "subnet-064502bf16f26f999",
+              "subnet-07d26b8ff12160897"
+            ],
+            "supported_network_types": [
+              "IPV4"
+            ],
+            "tags": {
+              "Name": "onepiece-encyclopedia-db-subnet-group"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-db-subnet-group",
+              "Project": "onepiece-encyclopedia"
+            },
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_subnet.private_a",
+            "aws_subnet.private_b",
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_instance_profile",
+      "name": "ec2",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::332144430830:instance-profile/onepiece-encyclopedia-ec2-profile",
+            "create_date": "2026-03-13T13:02:33Z",
+            "id": "onepiece-encyclopedia-ec2-profile",
+            "name": "onepiece-encyclopedia-ec2-profile",
+            "name_prefix": "",
+            "path": "/",
+            "role": "onepiece-encyclopedia-ec2-role",
+            "tags": {},
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Project": "onepiece-encyclopedia"
+            },
+            "unique_id": "AIPAU2VKZZ3XGBQA7DZNF"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.ec2_role"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "ec2_role",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::332144430830:role/onepiece-encyclopedia-ec2-role",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-03-13T13:02:32Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "onepiece-encyclopedia-ec2-role",
+            "inline_policy": [
+              {
+                "name": "onepiece-encyclopedia-ec2-s3-images",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:GetObject\",\"s3:PutObject\",\"s3:DeleteObject\",\"s3:ListBucket\"],\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:s3:::onepiece-encyclopedia-images-prod\",\"arn:aws:s3:::onepiece-encyclopedia-images-prod/*\"]}]}"
+              }
+            ],
+            "managed_policy_arns": [
+              "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+            ],
+            "max_session_duration": 3600,
+            "name": "onepiece-encyclopedia-ec2-role",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {},
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Project": "onepiece-encyclopedia"
+            },
+            "unique_id": "AROAU2VKZZ3XL6GBVM3LA"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "ec2_s3_images",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "onepiece-encyclopedia-ec2-role:onepiece-encyclopedia-ec2-s3-images",
+            "name": "onepiece-encyclopedia-ec2-s3-images",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:GetObject\",\"s3:PutObject\",\"s3:DeleteObject\",\"s3:ListBucket\"],\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:s3:::onepiece-encyclopedia-images-prod\",\"arn:aws:s3:::onepiece-encyclopedia-images-prod/*\"]}]}",
+            "role": "onepiece-encyclopedia-ec2-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.ec2_role",
+            "aws_s3_bucket.images"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "ec2_ssm",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "onepiece-encyclopedia-ec2-role-20260313130233086400000001",
+            "policy_arn": "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+            "role": "onepiece-encyclopedia-ec2-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.ec2_role"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_internet_gateway",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:internet-gateway/igw-0a196f03a66a6bee6",
+            "id": "igw-0a196f03a66a6bee6",
+            "owner_id": "332144430830",
+            "tags": {
+              "Name": "onepiece-encyclopedia-igw"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-igw",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_lb",
+      "name": "api",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "access_logs": [
+              {
+                "bucket": "",
+                "enabled": false,
+                "prefix": ""
+              }
+            ],
+            "arn": "arn:aws:elasticloadbalancing:eu-west-3:332144430830:loadbalancer/app/onepiece-encyclopedia-alb/4981bfa85bc72eae",
+            "arn_suffix": "app/onepiece-encyclopedia-alb/4981bfa85bc72eae",
+            "client_keep_alive": 3600,
+            "connection_logs": [
+              {
+                "bucket": "",
+                "enabled": false,
+                "prefix": ""
+              }
+            ],
+            "customer_owned_ipv4_pool": "",
+            "desync_mitigation_mode": "defensive",
+            "dns_name": "onepiece-encyclopedia-alb-1140334789.eu-west-3.elb.amazonaws.com",
+            "dns_record_client_routing_policy": null,
+            "drop_invalid_header_fields": false,
+            "enable_cross_zone_load_balancing": true,
+            "enable_deletion_protection": false,
+            "enable_http2": true,
+            "enable_tls_version_and_cipher_suite_headers": false,
+            "enable_waf_fail_open": false,
+            "enable_xff_client_port": false,
+            "enable_zonal_shift": false,
+            "enforce_security_group_inbound_rules_on_private_link_traffic": "",
+            "id": "arn:aws:elasticloadbalancing:eu-west-3:332144430830:loadbalancer/app/onepiece-encyclopedia-alb/4981bfa85bc72eae",
+            "idle_timeout": 60,
+            "internal": false,
+            "ip_address_type": "ipv4",
+            "ipam_pools": [],
+            "load_balancer_type": "application",
+            "minimum_load_balancer_capacity": [],
+            "name": "onepiece-encyclopedia-alb",
+            "name_prefix": "",
+            "preserve_host_header": false,
+            "security_groups": [
+              "sg-0f29e76911b4a77df"
+            ],
+            "subnet_mapping": [
+              {
+                "allocation_id": "",
+                "ipv6_address": "",
+                "outpost_id": "",
+                "private_ipv4_address": "",
+                "subnet_id": "subnet-0643230b7be505cd9"
+              },
+              {
+                "allocation_id": "",
+                "ipv6_address": "",
+                "outpost_id": "",
+                "private_ipv4_address": "",
+                "subnet_id": "subnet-0d5ed4f18b532fefe"
+              }
+            ],
+            "subnets": [
+              "subnet-0643230b7be505cd9",
+              "subnet-0d5ed4f18b532fefe"
+            ],
+            "tags": {
+              "Name": "onepiece-encyclopedia-alb"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-alb",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c",
+            "xff_header_processing_mode": "append",
+            "zone_id": "Z3Q77PNBQS71R4"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6NjAwMDAwMDAwMDAwLCJ1cGRhdGUiOjYwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_security_group.alb",
+            "aws_subnet.public_a",
+            "aws_subnet.public_b",
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_lb_listener",
+      "name": "http",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "alpn_policy": null,
+            "arn": "arn:aws:elasticloadbalancing:eu-west-3:332144430830:listener/app/onepiece-encyclopedia-alb/4981bfa85bc72eae/7fb5cc27e1496e50",
+            "certificate_arn": null,
+            "default_action": [
+              {
+                "authenticate_cognito": [],
+                "authenticate_oidc": [],
+                "fixed_response": [],
+                "forward": [],
+                "order": 1,
+                "redirect": [],
+                "target_group_arn": "arn:aws:elasticloadbalancing:eu-west-3:332144430830:targetgroup/onepiece-encyclopedia-api-tg/0f4cb69042daae8e",
+                "type": "forward"
+              }
+            ],
+            "id": "arn:aws:elasticloadbalancing:eu-west-3:332144430830:listener/app/onepiece-encyclopedia-alb/4981bfa85bc72eae/7fb5cc27e1496e50",
+            "load_balancer_arn": "arn:aws:elasticloadbalancing:eu-west-3:332144430830:loadbalancer/app/onepiece-encyclopedia-alb/4981bfa85bc72eae",
+            "mutual_authentication": [],
+            "port": 80,
+            "protocol": "HTTP",
+            "routing_http_request_x_amzn_mtls_clientcert_header_name": null,
+            "routing_http_request_x_amzn_mtls_clientcert_issuer_header_name": null,
+            "routing_http_request_x_amzn_mtls_clientcert_leaf_header_name": null,
+            "routing_http_request_x_amzn_mtls_clientcert_serial_number_header_name": null,
+            "routing_http_request_x_amzn_mtls_clientcert_subject_header_name": null,
+            "routing_http_request_x_amzn_mtls_clientcert_validity_header_name": null,
+            "routing_http_request_x_amzn_tls_cipher_suite_header_name": null,
+            "routing_http_request_x_amzn_tls_version_header_name": null,
+            "routing_http_response_access_control_allow_credentials_header_value": "",
+            "routing_http_response_access_control_allow_headers_header_value": "",
+            "routing_http_response_access_control_allow_methods_header_value": "",
+            "routing_http_response_access_control_allow_origin_header_value": "",
+            "routing_http_response_access_control_expose_headers_header_value": "",
+            "routing_http_response_access_control_max_age_header_value": "",
+            "routing_http_response_content_security_policy_header_value": "",
+            "routing_http_response_server_enabled": true,
+            "routing_http_response_strict_transport_security_header_value": "",
+            "routing_http_response_x_content_type_options_header_value": "",
+            "routing_http_response_x_frame_options_header_value": "",
+            "ssl_policy": "",
+            "tags": {},
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Project": "onepiece-encyclopedia"
+            },
+            "tcp_idle_timeout_seconds": null,
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsInVwZGF0ZSI6MzAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "aws_lb.api",
+            "aws_lb_target_group.api",
+            "aws_security_group.alb",
+            "aws_subnet.public_a",
+            "aws_subnet.public_b",
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_lb_target_group",
+      "name": "api",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:elasticloadbalancing:eu-west-3:332144430830:targetgroup/onepiece-encyclopedia-api-tg/0f4cb69042daae8e",
+            "arn_suffix": "targetgroup/onepiece-encyclopedia-api-tg/0f4cb69042daae8e",
+            "connection_termination": null,
+            "deregistration_delay": "300",
+            "health_check": [
+              {
+                "enabled": true,
+                "healthy_threshold": 2,
+                "interval": 30,
+                "matcher": "200",
+                "path": "/health",
+                "port": "traffic-port",
+                "protocol": "HTTP",
+                "timeout": 5,
+                "unhealthy_threshold": 3
+              }
+            ],
+            "id": "arn:aws:elasticloadbalancing:eu-west-3:332144430830:targetgroup/onepiece-encyclopedia-api-tg/0f4cb69042daae8e",
+            "ip_address_type": "ipv4",
+            "lambda_multi_value_headers_enabled": false,
+            "load_balancer_arns": [
+              "arn:aws:elasticloadbalancing:eu-west-3:332144430830:loadbalancer/app/onepiece-encyclopedia-alb/4981bfa85bc72eae"
+            ],
+            "load_balancing_algorithm_type": "round_robin",
+            "load_balancing_anomaly_mitigation": "off",
+            "load_balancing_cross_zone_enabled": "use_load_balancer_configuration",
+            "name": "onepiece-encyclopedia-api-tg",
+            "name_prefix": "",
+            "port": 3001,
+            "preserve_client_ip": null,
+            "protocol": "HTTP",
+            "protocol_version": "HTTP1",
+            "proxy_protocol_v2": false,
+            "slow_start": 0,
+            "stickiness": [
+              {
+                "cookie_duration": 86400,
+                "cookie_name": "",
+                "enabled": false,
+                "type": "lb_cookie"
+              }
+            ],
+            "tags": {
+              "Name": "onepiece-encyclopedia-api-tg"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-api-tg",
+              "Project": "onepiece-encyclopedia"
+            },
+            "target_failover": [
+              {
+                "on_deregistration": null,
+                "on_unhealthy": null
+              }
+            ],
+            "target_group_health": [
+              {
+                "dns_failover": [
+                  {
+                    "minimum_healthy_targets_count": "1",
+                    "minimum_healthy_targets_percentage": "off"
+                  }
+                ],
+                "unhealthy_state_routing": [
+                  {
+                    "minimum_healthy_targets_count": 1,
+                    "minimum_healthy_targets_percentage": "off"
+                  }
+                ]
+              }
+            ],
+            "target_health_state": [
+              {
+                "enable_unhealthy_connection_termination": null,
+                "unhealthy_draining_interval": null
+              }
+            ],
+            "target_type": "instance",
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:route-table/rtb-08de8cc15db417d57",
+            "id": "rtb-08de8cc15db417d57",
+            "owner_id": "332144430830",
+            "propagating_vgws": [],
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "igw-0a196f03a66a6bee6",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Name": "onepiece-encyclopedia-rt-public"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-rt-public",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_internet_gateway.main",
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "public_a",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-0d3e2b76c66c86ffd",
+            "route_table_id": "rtb-08de8cc15db417d57",
+            "subnet_id": "subnet-0d5ed4f18b532fefe",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_internet_gateway.main",
+            "aws_route_table.public",
+            "aws_subnet.public_a",
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "public_b",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-0875acbab0257f7ab",
+            "route_table_id": "rtb-08de8cc15db417d57",
+            "subnet_id": "subnet-0643230b7be505cd9",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_internet_gateway.main",
+            "aws_route_table.public",
+            "aws_subnet.public_b",
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "admin",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": null,
+            "arn": "arn:aws:s3:::onepiece-encyclopedia-admin-prod",
+            "bucket": "onepiece-encyclopedia-admin-prod",
+            "bucket_domain_name": "onepiece-encyclopedia-admin-prod.s3.amazonaws.com",
+            "bucket_prefix": "",
+            "bucket_regional_domain_name": "onepiece-encyclopedia-admin-prod.s3.eu-west-3.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": false,
+            "grant": [
+              {
+                "id": "22ce62270706db26bc91e4073c291595f49980fc7cc8f31ae30b9e3870d8e32b",
+                "permissions": [
+                  "FULL_CONTROL"
+                ],
+                "type": "CanonicalUser",
+                "uri": ""
+              }
+            ],
+            "hosted_zone_id": "Z3R1K369G5AVDG",
+            "id": "onepiece-encyclopedia-admin-prod",
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "object_lock_enabled": false,
+            "policy": "{\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::332144430830:distribution/E2GF6M6H5SCRRQ\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::onepiece-encyclopedia-admin-prod/*\",\"Sid\":\"AllowCloudFrontOACOnly\"}],\"Version\":\"2012-10-17\"}",
+            "region": "eu-west-3",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [
+              {
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "kms_master_key_id": "",
+                        "sse_algorithm": "AES256"
+                      }
+                    ],
+                    "bucket_key_enabled": false
+                  }
+                ]
+              }
+            ],
+            "tags": {},
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "versioning": [
+              {
+                "enabled": false,
+                "mfa_delete": false
+              }
+            ],
+            "website": [
+              {
+                "error_document": "index.html",
+                "index_document": "index.html",
+                "redirect_all_requests_to": "",
+                "routing_rules": ""
+              }
+            ],
+            "website_domain": "s3-website.eu-west-3.amazonaws.com",
+            "website_endpoint": "onepiece-encyclopedia-admin-prod.s3-website.eu-west-3.amazonaws.com"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "frontend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": null,
+            "arn": "arn:aws:s3:::onepiece-encyclopedia-frontend-prod",
+            "bucket": "onepiece-encyclopedia-frontend-prod",
+            "bucket_domain_name": "onepiece-encyclopedia-frontend-prod.s3.amazonaws.com",
+            "bucket_prefix": "",
+            "bucket_regional_domain_name": "onepiece-encyclopedia-frontend-prod.s3.eu-west-3.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": false,
+            "grant": [
+              {
+                "id": "22ce62270706db26bc91e4073c291595f49980fc7cc8f31ae30b9e3870d8e32b",
+                "permissions": [
+                  "FULL_CONTROL"
+                ],
+                "type": "CanonicalUser",
+                "uri": ""
+              }
+            ],
+            "hosted_zone_id": "Z3R1K369G5AVDG",
+            "id": "onepiece-encyclopedia-frontend-prod",
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "object_lock_enabled": false,
+            "policy": "{\"Statement\":[{\"Action\":\"s3:GetObject\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"arn:aws:s3:::onepiece-encyclopedia-frontend-prod/*\",\"Sid\":\"PublicRead\"}],\"Version\":\"2012-10-17\"}",
+            "region": "eu-west-3",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [
+              {
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "kms_master_key_id": "",
+                        "sse_algorithm": "AES256"
+                      }
+                    ],
+                    "bucket_key_enabled": false
+                  }
+                ]
+              }
+            ],
+            "tags": {},
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "versioning": [
+              {
+                "enabled": false,
+                "mfa_delete": false
+              }
+            ],
+            "website": [
+              {
+                "error_document": "index.html",
+                "index_document": "index.html",
+                "redirect_all_requests_to": "",
+                "routing_rules": ""
+              }
+            ],
+            "website_domain": "s3-website.eu-west-3.amazonaws.com",
+            "website_endpoint": "onepiece-encyclopedia-frontend-prod.s3-website.eu-west-3.amazonaws.com"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "images",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": null,
+            "arn": "arn:aws:s3:::onepiece-encyclopedia-images-prod",
+            "bucket": "onepiece-encyclopedia-images-prod",
+            "bucket_domain_name": "onepiece-encyclopedia-images-prod.s3.amazonaws.com",
+            "bucket_prefix": "",
+            "bucket_regional_domain_name": "onepiece-encyclopedia-images-prod.s3.eu-west-3.amazonaws.com",
+            "cors_rule": [
+              {
+                "allowed_headers": [
+                  "*"
+                ],
+                "allowed_methods": [
+                  "POST",
+                  "GET",
+                  "DELETE",
+                  "PUT"
+                ],
+                "allowed_origins": [
+                  "*"
+                ],
+                "expose_headers": [],
+                "max_age_seconds": 3000
+              }
+            ],
+            "force_destroy": false,
+            "grant": [
+              {
+                "id": "22ce62270706db26bc91e4073c291595f49980fc7cc8f31ae30b9e3870d8e32b",
+                "permissions": [
+                  "FULL_CONTROL"
+                ],
+                "type": "CanonicalUser",
+                "uri": ""
+              }
+            ],
+            "hosted_zone_id": "Z3R1K369G5AVDG",
+            "id": "onepiece-encyclopedia-images-prod",
+            "lifecycle_rule": [
+              {
+                "abort_incomplete_multipart_upload_days": 0,
+                "enabled": true,
+                "expiration": [
+                  {
+                    "date": "",
+                    "days": 7,
+                    "expired_object_delete_marker": false
+                  }
+                ],
+                "id": "expire-tmp",
+                "noncurrent_version_expiration": [],
+                "noncurrent_version_transition": [],
+                "prefix": "tmp/",
+                "tags": {},
+                "transition": []
+              }
+            ],
+            "logging": [],
+            "object_lock_configuration": [],
+            "object_lock_enabled": false,
+            "policy": "{\"Statement\":[{\"Action\":\"s3:GetObject\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"arn:aws:s3:::onepiece-encyclopedia-images-prod/*\",\"Sid\":\"PublicRead\"}],\"Version\":\"2012-10-17\"}",
+            "region": "eu-west-3",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [
+              {
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "kms_master_key_id": "",
+                        "sse_algorithm": "AES256"
+                      }
+                    ],
+                    "bucket_key_enabled": false
+                  }
+                ]
+              }
+            ],
+            "tags": {},
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "versioning": [
+              {
+                "enabled": false,
+                "mfa_delete": false
+              }
+            ],
+            "website": [],
+            "website_domain": null,
+            "website_endpoint": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_cors_configuration",
+      "name": "images",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "onepiece-encyclopedia-images-prod",
+            "cors_rule": [
+              {
+                "allowed_headers": [
+                  "*"
+                ],
+                "allowed_methods": [
+                  "DELETE",
+                  "GET",
+                  "POST",
+                  "PUT"
+                ],
+                "allowed_origins": [
+                  "*"
+                ],
+                "expose_headers": [],
+                "id": "",
+                "max_age_seconds": 3000
+              }
+            ],
+            "expected_bucket_owner": "",
+            "id": "onepiece-encyclopedia-images-prod"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.images"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_lifecycle_configuration",
+      "name": "images",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "bucket": "onepiece-encyclopedia-images-prod",
+            "expected_bucket_owner": "",
+            "id": "onepiece-encyclopedia-images-prod",
+            "rule": [
+              {
+                "abort_incomplete_multipart_upload": [],
+                "expiration": [
+                  {
+                    "date": null,
+                    "days": 7,
+                    "expired_object_delete_marker": false
+                  }
+                ],
+                "filter": [
+                  {
+                    "and": [],
+                    "object_size_greater_than": null,
+                    "object_size_less_than": null,
+                    "prefix": "tmp/",
+                    "tag": []
+                  }
+                ],
+                "id": "expire-tmp",
+                "noncurrent_version_expiration": [],
+                "noncurrent_version_transition": [],
+                "prefix": "",
+                "status": "Enabled",
+                "transition": []
+              }
+            ],
+            "timeouts": null,
+            "transition_default_minimum_object_size": "all_storage_classes_128K"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "dependencies": [
+            "aws_s3_bucket.images"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_policy",
+      "name": "admin",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "onepiece-encyclopedia-admin-prod",
+            "id": "onepiece-encyclopedia-admin-prod",
+            "policy": "{\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::332144430830:distribution/E2GF6M6H5SCRRQ\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::onepiece-encyclopedia-admin-prod/*\",\"Sid\":\"AllowCloudFrontOACOnly\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_cloudfront_distribution.admin",
+            "aws_cloudfront_origin_access_control.admin",
+            "aws_s3_bucket.admin",
+            "aws_s3_bucket_public_access_block.admin"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_policy",
+      "name": "frontend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "onepiece-encyclopedia-frontend-prod",
+            "id": "onepiece-encyclopedia-frontend-prod",
+            "policy": "{\"Statement\":[{\"Action\":\"s3:GetObject\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"arn:aws:s3:::onepiece-encyclopedia-frontend-prod/*\",\"Sid\":\"PublicRead\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.frontend",
+            "aws_s3_bucket_public_access_block.frontend"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_policy",
+      "name": "images",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "onepiece-encyclopedia-images-prod",
+            "id": "onepiece-encyclopedia-images-prod",
+            "policy": "{\"Statement\":[{\"Action\":\"s3:GetObject\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"arn:aws:s3:::onepiece-encyclopedia-images-prod/*\",\"Sid\":\"PublicRead\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.images",
+            "aws_s3_bucket_public_access_block.images"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "admin",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "block_public_acls": true,
+            "block_public_policy": true,
+            "bucket": "onepiece-encyclopedia-admin-prod",
+            "id": "onepiece-encyclopedia-admin-prod",
+            "ignore_public_acls": true,
+            "restrict_public_buckets": true
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.admin"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "frontend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "block_public_acls": false,
+            "block_public_policy": false,
+            "bucket": "onepiece-encyclopedia-frontend-prod",
+            "id": "onepiece-encyclopedia-frontend-prod",
+            "ignore_public_acls": false,
+            "restrict_public_buckets": false
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.frontend"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "images",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "block_public_acls": false,
+            "block_public_policy": false,
+            "bucket": "onepiece-encyclopedia-images-prod",
+            "id": "onepiece-encyclopedia-images-prod",
+            "ignore_public_acls": false,
+            "restrict_public_buckets": false
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.images"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_website_configuration",
+      "name": "admin",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "onepiece-encyclopedia-admin-prod",
+            "error_document": [
+              {
+                "key": "index.html"
+              }
+            ],
+            "expected_bucket_owner": "",
+            "id": "onepiece-encyclopedia-admin-prod",
+            "index_document": [
+              {
+                "suffix": "index.html"
+              }
+            ],
+            "redirect_all_requests_to": [],
+            "routing_rule": [],
+            "routing_rules": "",
+            "website_domain": "s3-website.eu-west-3.amazonaws.com",
+            "website_endpoint": "onepiece-encyclopedia-admin-prod.s3-website.eu-west-3.amazonaws.com"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.admin"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_website_configuration",
+      "name": "frontend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "onepiece-encyclopedia-frontend-prod",
+            "error_document": [
+              {
+                "key": "index.html"
+              }
+            ],
+            "expected_bucket_owner": "",
+            "id": "onepiece-encyclopedia-frontend-prod",
+            "index_document": [
+              {
+                "suffix": "index.html"
+              }
+            ],
+            "redirect_all_requests_to": [],
+            "routing_rule": [],
+            "routing_rules": "",
+            "website_domain": "s3-website.eu-west-3.amazonaws.com",
+            "website_endpoint": "onepiece-encyclopedia-frontend-prod.s3-website.eu-west-3.amazonaws.com"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.frontend"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "alb",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:security-group/sg-0f29e76911b4a77df",
+            "description": "ALB - HTTP/HTTPS from internet",
+            "egress": [
+              {
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "",
+                "from_port": 0,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "-1",
+                "security_groups": [],
+                "self": false,
+                "to_port": 0
+              }
+            ],
+            "id": "sg-0f29e76911b4a77df",
+            "ingress": [
+              {
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "",
+                "from_port": 443,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "tcp",
+                "security_groups": [],
+                "self": false,
+                "to_port": 443
+              },
+              {
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "",
+                "from_port": 80,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "tcp",
+                "security_groups": [],
+                "self": false,
+                "to_port": 80
+              }
+            ],
+            "name": "onepiece-encyclopedia-alb-sg",
+            "name_prefix": "",
+            "owner_id": "332144430830",
+            "revoke_rules_on_delete": false,
+            "tags": {
+              "Name": "onepiece-encyclopedia-alb-sg"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-alb-sg",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6OTAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "api",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:security-group/sg-04856d147fbad65de",
+            "description": "EC2 API - traffic from ALB only",
+            "egress": [
+              {
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "",
+                "from_port": 0,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "-1",
+                "security_groups": [],
+                "self": false,
+                "to_port": 0
+              }
+            ],
+            "id": "sg-04856d147fbad65de",
+            "ingress": [
+              {
+                "cidr_blocks": [],
+                "description": "API from ALB only",
+                "from_port": 3001,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "tcp",
+                "security_groups": [
+                  "sg-0f29e76911b4a77df"
+                ],
+                "self": false,
+                "to_port": 3001
+              }
+            ],
+            "name": "onepiece-encyclopedia-api-sg",
+            "name_prefix": "",
+            "owner_id": "332144430830",
+            "revoke_rules_on_delete": false,
+            "tags": {
+              "Name": "onepiece-encyclopedia-api-sg"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-api-sg",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6OTAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "aws_security_group.alb",
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "rds",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:security-group/sg-0e640dd9203ac0571",
+            "description": "RDS - PostgreSQL from EC2 only",
+            "egress": [
+              {
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "",
+                "from_port": 0,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "-1",
+                "security_groups": [],
+                "self": false,
+                "to_port": 0
+              }
+            ],
+            "id": "sg-0e640dd9203ac0571",
+            "ingress": [
+              {
+                "cidr_blocks": [],
+                "description": "PostgreSQL from EC2 only",
+                "from_port": 5432,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "tcp",
+                "security_groups": [
+                  "sg-04856d147fbad65de"
+                ],
+                "self": false,
+                "to_port": 5432
+              }
+            ],
+            "name": "onepiece-encyclopedia-rds-sg",
+            "name_prefix": "",
+            "owner_id": "332144430830",
+            "revoke_rules_on_delete": false,
+            "tags": {
+              "Name": "onepiece-encyclopedia-rds-sg"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-rds-sg",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6OTAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "aws_security_group.alb",
+            "aws_security_group.api",
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "private_a",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:subnet/subnet-064502bf16f26f999",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "eu-west-3a",
+            "availability_zone_id": "euw3-az1",
+            "cidr_block": "10.0.10.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-064502bf16f26f999",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": false,
+            "outpost_arn": "",
+            "owner_id": "332144430830",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "onepiece-encyclopedia-private-a"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-private-a",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "private_b",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:subnet/subnet-07d26b8ff12160897",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "eu-west-3b",
+            "availability_zone_id": "euw3-az2",
+            "cidr_block": "10.0.11.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-07d26b8ff12160897",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": false,
+            "outpost_arn": "",
+            "owner_id": "332144430830",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "onepiece-encyclopedia-private-b"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-private-b",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "public_a",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:subnet/subnet-0d5ed4f18b532fefe",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "eu-west-3a",
+            "availability_zone_id": "euw3-az1",
+            "cidr_block": "10.0.1.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-0d5ed4f18b532fefe",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "332144430830",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "onepiece-encyclopedia-public-a"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-public-a",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "public_b",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:subnet/subnet-0643230b7be505cd9",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "eu-west-3b",
+            "availability_zone_id": "euw3-az2",
+            "cidr_block": "10.0.2.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-0643230b7be505cd9",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "332144430830",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "onepiece-encyclopedia-public-b"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-public-b",
+              "Project": "onepiece-encyclopedia"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0233db2d8e998a10c"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.main"
+          ],
+          "create_before_destroy": true
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_vpc",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:eu-west-3:332144430830:vpc/vpc-0233db2d8e998a10c",
+            "assign_generated_ipv6_cidr_block": false,
+            "cidr_block": "10.0.0.0/16",
+            "default_network_acl_id": "acl-0f01bb5cd709fd00f",
+            "default_route_table_id": "rtb-079d009cfd13c351b",
+            "default_security_group_id": "sg-0e8d3e04ebc292ce0",
+            "dhcp_options_id": "dopt-0e34ed194bf786787",
+            "enable_dns_hostnames": true,
+            "enable_dns_support": true,
+            "enable_network_address_usage_metrics": false,
+            "id": "vpc-0233db2d8e998a10c",
+            "instance_tenancy": "default",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_association_id": "",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_network_border_group": "",
+            "ipv6_ipam_pool_id": "",
+            "ipv6_netmask_length": 0,
+            "main_route_table_id": "rtb-079d009cfd13c351b",
+            "owner_id": "332144430830",
+            "tags": {
+              "Name": "onepiece-encyclopedia-vpc"
+            },
+            "tags_all": {
+              "Environment": "prod",
+              "ManagedBy": "terraform",
+              "Name": "onepiece-encyclopedia-vpc",
+              "Project": "onepiece-encyclopedia"
+            }
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ==",
+          "create_before_destroy": true
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
