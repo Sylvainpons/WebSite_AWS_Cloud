@@ -14,7 +14,7 @@ RUN npm run build
 
 # ─── Production image ─────────────────────────────────────────────────────────
 FROM node:20-alpine AS production
-
+RUN apk add --no-cache openssl1.1-compat
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 
 WORKDIR /app
