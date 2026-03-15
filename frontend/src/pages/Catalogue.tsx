@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams,useNavigate } from 'react-router-dom'
 import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getCategories, getItems, type Category, type Item } from '../api/client'
 import ItemCard from '../components/ui/ItemCard'
@@ -37,20 +37,20 @@ export default function Catalogue() {
 
   const [searchInput, setSearchInput] = useState(search)
 
+  const navigate = useNavigate()
+
   const setFilter = (key: string, value: string | null) => {
-    const next = new URLSearchParams(searchParams)
-    if (value) next.set(key, value); else next.delete(key)
-    next.delete('page')
-    window.history.pushState({}, '', `/catalogue?${next.toString()}`)
-    setSearchParams(next)
-  }
+  const next = new URLSearchParams(searchParams)
+  if (value) next.set(key, value); else next.delete(key)
+  next.delete('page')
+  navigate(`/catalogue?${next.toString()}`)
+}
 
   const setPage = (p: number) => {
     const next = new URLSearchParams(searchParams)
     if (p === 1) next.delete('page'); else next.set('page', String(p))
-    window.history.pushState({}, '', `/catalogue?${next.toString()}`)
-    setSearchParams(next)
-  }
+    navigate(`/catalogue?${next.toString()}`)
+}
 
   const selectedCat = categories.find(c => c.slug === category)
 
@@ -79,10 +79,7 @@ export default function Catalogue() {
     setFilter('search', searchInput || null)
   }
 
-  const clearAll = () => {
-    window.history.pushState({}, '', '/catalogue')
-    setSearchParams(new URLSearchParams())
-  }
+  const clearAll = () => navigate('/catalogue')
 
   const hasActiveFilters = category || subCategory || search || rarity || isLimited
 
