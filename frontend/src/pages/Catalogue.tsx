@@ -27,7 +27,6 @@ export default function Catalogue() {
   const [loading, setLoading] = useState(true)
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  // Read filters from URL
   const category = searchParams.get('category') || ''
   const subCategory = searchParams.get('subCategory') || ''
   const search = searchParams.get('search') || ''
@@ -51,7 +50,6 @@ export default function Catalogue() {
     setSearchParams(next)
   }
 
-  // Find subcategories for selected category
   const selectedCat = categories.find(c => c.slug === category)
 
   const load = useCallback(() => {
@@ -85,13 +83,11 @@ export default function Catalogue() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="font-display text-3xl font-semibold text-gold-400 mb-1">Catalogue</h1>
         <p className="text-slate-500 text-sm">{total} item{total !== 1 ? 's' : ''} trouvé{total !== 1 ? 's' : ''}</p>
       </div>
 
-      {/* Search + controls bar */}
       <div className="flex flex-wrap gap-3 mb-6">
         <form onSubmit={handleSearch} className="relative flex-1 min-w-[200px] max-w-sm">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -109,7 +105,6 @@ export default function Catalogue() {
           )}
         </form>
 
-        {/* Sort */}
         <select
           value={sort}
           onChange={e => setFilter('sort', e.target.value)}
@@ -118,7 +113,6 @@ export default function Catalogue() {
           {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
 
-        {/* Filters toggle mobile */}
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
           className={`btn-outline text-sm lg:hidden ${filtersOpen ? 'border-gold-500/40 text-gold-400' : ''}`}
@@ -134,10 +128,8 @@ export default function Catalogue() {
       </div>
 
       <div className="flex gap-6">
-        {/* Sidebar filters */}
         <aside className={`shrink-0 w-56 space-y-6 ${filtersOpen ? 'block' : 'hidden'} lg:block`}>
 
-          {/* Categories */}
           <div>
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Catégorie</h3>
             <div className="space-y-1">
@@ -148,19 +140,21 @@ export default function Catalogue() {
                 Toutes
               </button>
               {categories.map(cat => (
-                <button key={cat.id}
-                  onClick={() => { 
-                    console.log('clic sur', cat.slug)
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    console.log('clic catégorie:', cat.slug)
                     setFilter('category', cat.slug)
-                    setFilter('subCategory', null) 
+                    setFilter('subCategory', null)
                   }}
-            
+                  className={`filter-chip w-full text-left ${category === cat.slug ? 'filter-chip-active' : 'filter-chip-inactive'}`}
+                >
+                  {cat.name}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* SubCategories */}
           {selectedCat && selectedCat.subCategories.length > 0 && (
             <div>
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Sous-catégorie</h3>
@@ -184,7 +178,6 @@ export default function Catalogue() {
             </div>
           )}
 
-          {/* Rarity */}
           <div>
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Rareté</h3>
             <div className="space-y-1">
@@ -205,7 +198,6 @@ export default function Catalogue() {
             </div>
           </div>
 
-          {/* Limited */}
           <div>
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Édition</h3>
             <button
@@ -217,7 +209,6 @@ export default function Catalogue() {
           </div>
         </aside>
 
-        {/* Grid */}
         <div className="flex-1 min-w-0">
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -238,7 +229,6 @@ export default function Catalogue() {
                 {items.map(item => <ItemCard key={item.id} item={item} />)}
               </div>
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 mt-8">
                   <button
