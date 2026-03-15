@@ -41,12 +41,14 @@ export default function Catalogue() {
     const next = new URLSearchParams(searchParams)
     if (value) next.set(key, value); else next.delete(key)
     next.delete('page')
+    window.history.pushState({}, '', `/catalogue?${next.toString()}`)
     setSearchParams(next)
   }
 
   const setPage = (p: number) => {
     const next = new URLSearchParams(searchParams)
     if (p === 1) next.delete('page'); else next.set('page', String(p))
+    window.history.pushState({}, '', `/catalogue?${next.toString()}`)
     setSearchParams(next)
   }
 
@@ -77,7 +79,10 @@ export default function Catalogue() {
     setFilter('search', searchInput || null)
   }
 
-  const clearAll = () => setSearchParams(new URLSearchParams())
+  const clearAll = () => {
+    window.history.pushState({}, '', '/catalogue')
+    setSearchParams(new URLSearchParams())
+  }
 
   const hasActiveFilters = category || subCategory || search || rarity || isLimited
 
@@ -142,11 +147,7 @@ export default function Catalogue() {
               {categories.map(cat => (
                 <button
                   key={cat.id}
-                  onClick={() => {
-                    console.log('clic catégorie:', cat.slug)
-                    setFilter('category', cat.slug)
-                    setFilter('subCategory', null)
-                  }}
+                  onClick={() => { setFilter('category', cat.slug); setFilter('subCategory', null) }}
                   className={`filter-chip w-full text-left ${category === cat.slug ? 'filter-chip-active' : 'filter-chip-inactive'}`}
                 >
                   {cat.name}
