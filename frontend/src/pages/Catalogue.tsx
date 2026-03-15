@@ -149,10 +149,12 @@ export default function Catalogue() {
               </button>
               {categories.map(cat => (
                 <button key={cat.id}
-                  onClick={() => { setFilter('category', cat.slug); setFilter('subCategory', null) }}
-                  className={`filter-chip w-full text-left ${category === cat.slug ? 'filter-chip-active' : 'filter-chip-inactive'}`}
-                >
-                  {cat.name}
+                  onClick={() => { 
+                    console.log('clic sur', cat.slug)
+                    setFilter('category', cat.slug)
+                    setFilter('subCategory', null) 
+                  }}
+            
                 </button>
               ))}
             </div>
