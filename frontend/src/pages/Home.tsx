@@ -43,9 +43,11 @@ export default function Home() {
           </div>
 
           <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl mb-4 leading-none">
-            <span className="text-white">ONE PIECE</span>
+            <span className="text-white">ONE PIECE </span>
             <br />
-            <span className="text-gold-400">ENCYCLOPEDIA</span>
+            <br />
+            <span className="text-gold-400">ITEM</span>
+            <span className="text-gold-400">ENCYCLOPEDIE</span>
           </h1>
 
           <p className="text-slate-400 text-lg max-w-xl mx-auto mb-8 leading-relaxed">
