@@ -25,7 +25,7 @@ export default function Navbar() {
             <Anchor size={16} className="text-gold-400" />
           </div>
           <span className="font-display text-gold-400 font-semibold text-sm hidden sm:block tracking-wider">
-            ONE PIECE ENCYCLOPEDIA
+            ONE PIECE ITEMS ENCYCLOPEDIE
           </span>
         </Link>
 

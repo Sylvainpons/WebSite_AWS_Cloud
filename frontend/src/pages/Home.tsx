@@ -39,7 +39,7 @@ export default function Home() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-gold-500/10 border border-gold-500/20 rounded-full px-4 py-1.5 mb-6">
             <Compass size={13} className="text-gold-400" />
-            <span className="text-gold-400 text-xs font-medium tracking-wider uppercase">Encyclopédie Officielle</span>
+            <span className="text-gold-400 text-xs font-medium tracking-wider uppercase">Encyclopédie Non Officielle</span>
           </div>
 
           <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl mb-4 leading-none">
