@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="w-7 h-7 rounded-lg bg-gold-500/15 border border-gold-500/30 flex items-center justify-center">
             <Anchor size={13} className="text-gold-400" />
           </div>
-          <span className="font-display text-gold-400/70 text-xs tracking-wider">ONE PIECE ENCYCLOPEDIA</span>
+          <span className="font-display text-gold-400/70 text-xs tracking-wider">ONE PIECE ITEMS ENCYCLOPEDIA</span>
         </div>
         <p className="text-slate-600 text-xs text-center">
           Site non officiel — One Piece © Eiichiro Oda / Shueisha. Tous droits réservés.
