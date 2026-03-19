@@ -19,6 +19,7 @@ export interface Item {
   imageUrl: string | null; releaseYear: number | null; price: string | null
   rarity: 'COMMON' | 'UNCOMMON' | 'RARE' | 'EPIC' | 'LEGENDARY'
   isLimited: boolean; officialLink: string | null
+  images: string[]
   subCategory: { id: number; name: string; slug: string; category: { id: number; name: string; slug: string } }
   tags: { id: number; name: string }[]
 }

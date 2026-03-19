@@ -6,10 +6,11 @@ import api from '../api/client'
 import Modal from '../components/Modal'
 import ConfirmDelete from '../components/ConfirmDelete'
 import ImageUpload from '../components/ImageUpload'
+import MultiImageUpload from '../components/MultiImageUpload'
 
 interface Item {
   id: number; name: string; slug: string; description: string | null
-  imageUrl: string | null; releaseYear: number | null; price: string | null
+  imageUrl: string | null; images: string[]; releaseYear: number | null; price: string | null
   rarity: string; isLimited: boolean; isActive: boolean
   subCategoryId: number
   subCategory: { name: string; category: { name: string } }
@@ -40,6 +41,7 @@ export default function Items() {
   const [editing, setEditing] = useState<Item | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Item | null>(null)
   const [imageUrl, setImageUrl] = useState('')
+  const [extraImages, setExtraImages] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -56,13 +58,15 @@ export default function Items() {
   useEffect(() => { api.get('/subcategories/admin/all').then(r => setSubs(r.data)) }, [])
 
   const openCreate = () => {
-    setEditing(null); setImageUrl('')
+    setEditing(null); setImageUrl(''); setExtraImages([])
     reset({ name: '', description: '', releaseYear: '', price: '', currency: 'EUR', officialLink: '', rarity: 'COMMON', isLimited: false, isActive: true, subCategoryId: subs[0]?.id, tags: '' })
     setModalOpen(true)
   }
 
   const openEdit = (item: Item) => {
-    setEditing(item); setImageUrl(item.imageUrl || '')
+    setEditing(item)
+    setImageUrl(item.imageUrl || '')
+    setExtraImages(item.images || [])
     reset({
       name: item.name, description: item.description || '',
       releaseYear: item.releaseYear?.toString() || '', price: item.price || '',
@@ -78,7 +82,7 @@ export default function Items() {
     setSaving(true)
     try {
       const tags = data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : []
-      const payload = { ...data, imageUrl: imageUrl || null, tags }
+      const payload = { ...data, imageUrl: imageUrl || null, images: extraImages, tags }
       if (editing) {
         await api.put(`/items/${editing.id}`, payload)
         toast.success('Item mis à jour')
@@ -120,7 +124,6 @@ export default function Items() {
         <button onClick={openCreate} className="btn-primary"><Plus size={16} /> Nouvel item</button>
       </div>
 
-      {/* Search */}
       <div className="relative mb-4 w-72">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
         <input
@@ -172,6 +175,7 @@ export default function Items() {
                     )}
                     <div>
                       <p className="text-sm font-medium text-slate-200">{item.name}</p>
+                      <p className="text-xs text-slate-500">{(item.images?.length || 0) + (item.imageUrl ? 1 : 0)} image{((item.images?.length || 0) + (item.imageUrl ? 1 : 0)) > 1 ? 's' : ''}</p>
                       {item.isLimited && <span className="text-xs text-amber-400">Édition limitée</span>}
                     </div>
                   </div>
@@ -211,7 +215,6 @@ export default function Items() {
         </table>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-slate-500">Page {page} / {totalPages}</p>
@@ -222,12 +225,10 @@ export default function Items() {
         </div>
       )}
 
-      {/* Modal */}
       {modalOpen && (
         <Modal title={editing ? 'Modifier l\'item' : 'Nouvel item'} onClose={() => setModalOpen(false)} size="lg">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              {/* Left col */}
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-400 mb-1.5">Nom *</label>
@@ -264,6 +265,10 @@ export default function Items() {
                   <label className="block text-xs font-medium text-slate-400 mb-1.5">Tags (séparés par virgule)</label>
                   <input className="input-field" placeholder="luffy, sanji, combat" {...register('tags')} />
                 </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Lien officiel</label>
+                  <input type="url" className="input-field" placeholder="https://..." {...register('officialLink')} />
+                </div>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" className="w-4 h-4 accent-gold-500" {...register('isLimited')} />
@@ -275,15 +280,14 @@ export default function Items() {
                   </label>
                 </div>
               </div>
-              {/* Right col */}
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-400 mb-1.5">Image principale</label>
                   <ImageUpload value={imageUrl} onChange={setImageUrl} folder="items" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Lien officiel</label>
-                  <input type="url" className="input-field" placeholder="https://..." {...register('officialLink')} />
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Images supplémentaires</label>
+                  <MultiImageUpload images={extraImages} onChange={setExtraImages} folder="items" />
                 </div>
               </div>
             </div>

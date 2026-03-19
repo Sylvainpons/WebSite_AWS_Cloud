@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getCategories, getItems, type Category, type Item } from '../api/client'
 import ItemCard from '../components/ui/ItemCard'
@@ -19,7 +19,8 @@ const SORT_OPTIONS = [
 ]
 
 export default function Catalogue() {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<Item[]>([])
   const [total, setTotal] = useState(0)
@@ -37,17 +38,20 @@ export default function Catalogue() {
 
   const [searchInput, setSearchInput] = useState(search)
 
-  const setFilter = (key: string, value: string | null) => {
+  // Met à jour plusieurs filtres en une seule navigation
+  const setFilters = (updates: Record<string, string | null>) => {
     const next = new URLSearchParams(searchParams)
-    if (value) next.set(key, value); else next.delete(key)
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) next.set(key, value); else next.delete(key)
+    })
     next.delete('page')
-    setSearchParams(next)
+    navigate(`/catalogue?${next.toString()}`)
   }
 
   const setPage = (p: number) => {
     const next = new URLSearchParams(searchParams)
     if (p === 1) next.delete('page'); else next.set('page', String(p))
-    setSearchParams(next)
+    navigate(`/catalogue?${next.toString()}`)
   }
 
   const selectedCat = categories.find(c => c.slug === category)
@@ -74,10 +78,10 @@ export default function Catalogue() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    setFilter('search', searchInput || null)
+    setFilters({ search: searchInput || null })
   }
 
-  const clearAll = () => setSearchParams(new URLSearchParams())
+  const clearAll = () => navigate('/catalogue')
 
   const hasActiveFilters = category || subCategory || search || rarity || isLimited
 
@@ -98,7 +102,7 @@ export default function Catalogue() {
             className="w-full bg-ocean-900 border border-ocean-700 text-slate-100 rounded-xl px-3 py-2.5 pl-9 text-sm focus:outline-none focus:border-gold-500 placeholder:text-slate-500"
           />
           {searchInput && (
-            <button type="button" onClick={() => { setSearchInput(''); setFilter('search', null) }}
+            <button type="button" onClick={() => { setSearchInput(''); setFilters({ search: null }) }}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
               <X size={13} />
             </button>
@@ -107,7 +111,7 @@ export default function Catalogue() {
 
         <select
           value={sort}
-          onChange={e => setFilter('sort', e.target.value)}
+          onChange={e => setFilters({ sort: e.target.value })}
           className="bg-ocean-900 border border-ocean-700 text-slate-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-gold-500"
         >
           {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -134,7 +138,7 @@ export default function Catalogue() {
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Catégorie</h3>
             <div className="space-y-1">
               <button
-                onClick={() => { setFilter('category', null); setFilter('subCategory', null) }}
+                onClick={() => setFilters({ category: null, subCategory: null })}
                 className={`filter-chip w-full text-left ${!category ? 'filter-chip-active' : 'filter-chip-inactive'}`}
               >
                 Toutes
@@ -142,11 +146,7 @@ export default function Catalogue() {
               {categories.map(cat => (
                 <button
                   key={cat.id}
-                  onClick={() => {
-                    console.log('clic catégorie:', cat.slug)
-                    setFilter('category', cat.slug)
-                    setFilter('subCategory', null)
-                  }}
+                  onClick={() => setFilters({ category: cat.slug, subCategory: null })}
                   className={`filter-chip w-full text-left ${category === cat.slug ? 'filter-chip-active' : 'filter-chip-inactive'}`}
                 >
                   {cat.name}
@@ -160,14 +160,14 @@ export default function Catalogue() {
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Sous-catégorie</h3>
               <div className="space-y-1">
                 <button
-                  onClick={() => setFilter('subCategory', null)}
+                  onClick={() => setFilters({ subCategory: null })}
                   className={`filter-chip w-full text-left ${!subCategory ? 'filter-chip-active' : 'filter-chip-inactive'}`}
                 >
                   Toutes
                 </button>
                 {selectedCat.subCategories.map(sub => (
                   <button key={sub.id}
-                    onClick={() => setFilter('subCategory', sub.slug)}
+                    onClick={() => setFilters({ subCategory: sub.slug })}
                     className={`filter-chip w-full text-left ${subCategory === sub.slug ? 'filter-chip-active' : 'filter-chip-inactive'}`}
                   >
                     {sub.name}
@@ -182,14 +182,14 @@ export default function Catalogue() {
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Rareté</h3>
             <div className="space-y-1">
               <button
-                onClick={() => setFilter('rarity', null)}
+                onClick={() => setFilters({ rarity: null })}
                 className={`filter-chip w-full text-left ${!rarity ? 'filter-chip-active' : 'filter-chip-inactive'}`}
               >
                 Toutes
               </button>
               {RARITIES.map(r => (
                 <button key={r}
-                  onClick={() => setFilter('rarity', r)}
+                  onClick={() => setFilters({ rarity: r })}
                   className={`filter-chip w-full text-left ${rarity === r ? 'filter-chip-active' : 'filter-chip-inactive'}`}
                 >
                   {RARITY_LABEL[r]}
@@ -201,7 +201,7 @@ export default function Catalogue() {
           <div>
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Édition</h3>
             <button
-              onClick={() => setFilter('isLimited', isLimited ? null : 'true')}
+              onClick={() => setFilters({ isLimited: isLimited ? null : 'true' })}
               className={`filter-chip w-full text-left ${isLimited ? 'filter-chip-active' : 'filter-chip-inactive'}`}
             >
               Éditions limitées
