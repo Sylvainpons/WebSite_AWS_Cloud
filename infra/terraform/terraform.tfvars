@@ -26,4 +26,4 @@ db_multi_az         = false  # true = double le prix RDS
 
 # ─── App ─────────────────────────────────────────────────────────────────────
 # Génère avec : node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-jwt_secret = "CHANGE_ME_LONGUE_CHAINE_ALEATOIRE_64_CHARS"
+jwt_secret = "14181d3807679f3998afd5c3d0e686d4b45fdb1efa0bc5210188f5f93ee986d260c935ed6f7fd711f5aa9212f466aab91c1a5eae17ab1cfdb180596377ff1ab7"
