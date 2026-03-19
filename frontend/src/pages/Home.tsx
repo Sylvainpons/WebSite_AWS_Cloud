@@ -67,26 +67,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="font-display text-xl font-semibold text-gold-400">Catégories</h2>
-            <p className="text-slate-500 text-sm mt-0.5">Parcourir par type d'objet</p>
-          </div>
-          <Link to="/catalogue" className="btn-outline text-sm">
-            Tout voir <ChevronRight size={14} />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {loadingCats
-            ? Array.from({ length: 5 }).map((_, i) => <CategorySkeleton key={i} />)
-            : categories.map(cat => <CategoryCard key={cat.id} category={cat} />)
-          }
-        </div>
-      </section>
-
       {/* Latest items */}
       <section className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
@@ -110,6 +90,26 @@ export default function Home() {
                 </div>
               )
               : latestItems.map(item => <ItemCard key={item.id} item={item} />)
+          }
+        </div>
+      </section>
+
+       {/* Categories */}
+      <section className="max-w-7xl mx-auto px-6 py-12">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="font-display text-xl font-semibold text-gold-400">Catégories</h2>
+            <p className="text-slate-500 text-sm mt-0.5">Parcourir par type d'objet</p>
+          </div>
+          <Link to="/catalogue" className="btn-outline text-sm">
+            Tout voir <ChevronRight size={14} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          {loadingCats
+            ? Array.from({ length: 5 }).map((_, i) => <CategorySkeleton key={i} />)
+            : categories.map(cat => <CategoryCard key={cat.id} category={cat} />)
           }
         </div>
       </section>
